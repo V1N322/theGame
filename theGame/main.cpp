@@ -2,7 +2,7 @@
 
 class Actor
 {
-  Coordinates actorPos = Coordinates(5, 5);
+  Coordinates actorPos = Coordinates(25, 25);
 
 public:
 	Coordinates get_actorPos() { return actorPos;}
@@ -14,13 +14,7 @@ public:
   Actor player;
   Coordinates playerPos = player.get_actorPos();
 
-	Coordinates cookes_1 = Coordinates(6, 6);
-	Coordinates cookes_2 = Coordinates(3, 4);
-	Coordinates cookes_3 = Coordinates(2, 3);
-
-
-
-	std::list<Coordinates> cookes = {cookes_1, cookes_2, cookes_3};
+	std::list<Coordinates> cookies = { Coordinates(26, 26), Coordinates(23, 24), Coordinates(22, 23), Coordinates(23, 25)};
 
 public:
 	Coordinates get_playerPos()
@@ -28,20 +22,18 @@ public:
 		return playerPos;
 	}
 
-	std::list<Coordinates> get_cookesPos()
+	std::list<Coordinates> get_cookiesPos()
 	{
-		return cookes;
+		return cookies;
 	}
 };
 
 class Map
 {
 public:
-	Coordinates mapSize = Coordinates(10, 10);
+	Coordinates mapSize = Coordinates(50, 50);
 
 	OBJ obj;
-
-	
 
 };
 
@@ -85,7 +77,7 @@ class Render
 		std::cout << std::endl;
 	}
 
-	void buildBaseFull(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> coockes)
+	void buildBaseFull(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies)
 	{
 
 		for(int b = 0; b != mapSize.y; b++){
@@ -94,8 +86,8 @@ class Render
 
 			for (int i = 0; i != mapSize.x; ++i)
 			{
-				bool cellhasCookes = false;
-				for (Coordinates n : coockes) {
+				bool cellhasCookies = false;
+				for (Coordinates n : cookies) {
 					if (n.x == i && n.y == b)
 					{
 									if (n.x == playerPos.x &&
@@ -104,7 +96,7 @@ class Render
 						else
 							std::cout << '0';
 						
-						cellhasCookes = true;
+						cellhasCookies = true;
 					}
 				}
 				
@@ -118,7 +110,7 @@ class Render
 					
 
 				else {
-					if (cellhasCookes == false)
+					if (cellhasCookies == false)
 					std::cout << ' ';
 						
 				}
@@ -145,7 +137,7 @@ class Render
 
 public:
 
-	void buildYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> coockes, int viewSize)
+	void buildYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize)
 	{
 		
 		for (int y = viewSize - viewSize*2; y != viewSize + 1; ++y)
@@ -159,11 +151,9 @@ public:
 				std::cout << " ";
 
 
-				//std::cout << "x = " << X << ", y = " << Y;
-
 				bool hasCookies = false;
 
-				for (Coordinates n : coockes)
+				for (Coordinates n : cookies)
 				{
 					if (X == n.x && Y == n.y){
 						hasCookies = true;
@@ -175,7 +165,7 @@ public:
 					std::cout << 'P';
 
 				else if (hasCookies)
-					std::cout << '•';
+					std::cout << "•";
 
 				else if (X <= -1 || X >= mapSize.x || Y <= -1 || Y >= mapSize.y)
 					std::cout << '~';
@@ -194,26 +184,26 @@ public:
 	}
 
 public:
-	void renderFullMap(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> coockes)
+	void renderFullMap(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies)
 	{
 
 		buildUpFull(mapSize);
 
-		buildBaseFull(mapSize, playerPos, coockes);
+		buildBaseFull(mapSize, playerPos, cookies);
 
 		buildDownFull(mapSize);
 	}
 
-	void renderYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> coockes, int viewSize)
+	void renderYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize)
 	{
-		buildYan(mapSize, playerPos, coockes, viewSize);
+		buildYan(mapSize, playerPos, cookies, viewSize);
 
 	}
 
-	void renderTwo(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> coockes, int viewSize)
+	void renderTwo(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize)
 	{
-		renderYan(mapSize, playerPos, coockes, viewSize);
-		renderFullMap(mapSize, playerPos, coockes);
+		renderYan(mapSize, playerPos, cookies, viewSize);
+		renderFullMap(mapSize, playerPos, cookies);
 	}
 };
 
@@ -238,46 +228,44 @@ public:
 	{
 		Coordinates newPos(playerPos.x, playerPos.y);
 
-		if (playerPos.x != 1 || playerPos.y != 1 || playerPos.x != mapSize.x || playerPos.y != mapSize.y)
-		{
 
 
-			Button button;
+		Button button;
 
-			char buttonPressed = button.isPressed();
+		char buttonPressed = button.isPressed();
 
-			if (buttonPressed == 'w'){
-				--newPos.y;
-				if (newPos.y == -1)
-					++newPos.y;
-			}
-			if (buttonPressed == 'a')	
-			{
-				--newPos.x;
-				if (newPos.x == -1)
-					++newPos.x;
-			}
-
-			if (buttonPressed == 's')
-			{
+		if (buttonPressed == 'w'){
+			--newPos.y;
+			if (newPos.y == -1)
 				++newPos.y;
-				if (newPos.y == mapSize.y)
-					--newPos.y;
-			}
-
-			if (buttonPressed == 'd')
-			{
-				++newPos.x;
-				if (newPos.x == mapSize.x)
-					--newPos.x;
-			}
-
-			if (buttonPressed == 'n')
-			{
-				changeView();
-			}
-			
 		}
+		if (buttonPressed == 'a')	
+		{
+			--newPos.x;
+			if (newPos.x == -1)
+				++newPos.x;
+		}
+
+		if (buttonPressed == 's')
+		{
+			++newPos.y;
+			if (newPos.y == mapSize.y)
+				--newPos.y;
+			}
+
+		if (buttonPressed == 'd')
+		{
+			++newPos.x;
+			if (newPos.x == mapSize.x)
+				--newPos.x;
+		}
+
+		if (buttonPressed == 'n')
+		{
+			changeView();
+		}
+			
+		
 
 		
 
@@ -285,7 +273,6 @@ public:
 	}
 };
 
-//Changes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 class Logic
 {
 public:
@@ -295,7 +282,7 @@ public:
 
 		for (Coordinates n : listCookies)
 		{
-			if (n.x != playerPos.x && n.y != playerPos.y)
+			if (n.x != playerPos.x || n.y != playerPos.y)
 			{
 				resultList.push_back(n);
 			}
@@ -304,25 +291,24 @@ public:
 		return resultList;
 	}
 };
-//Changes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class Game
 {
 public:
 	Coordinates mapSize;
 	Coordinates playerPos;
-	std::list<Coordinates> coockes;
-	int viewSize = 10;
+	std::list<Coordinates> cookies;
+	int viewSize = 6;
+	int numberCookies = cookies.size();
+	int eatCookies = 0;
 
-	//Конструктор
-	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const std::list<Coordinates>& aCoockes)
-		:mapSize(aMapSize), playerPos(aPlayerPos), coockes(aCoockes)
+	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const std::list<Coordinates>& aCookies)
+		:mapSize(aMapSize), playerPos(aPlayerPos), cookies(aCookies)
 	{
 		mapSize = aMapSize;
 		playerPos = aPlayerPos;
-		coockes = aCoockes;
+		cookies = aCookies;
 	}
-	//Конструктор
 
 
 public:
@@ -347,24 +333,39 @@ public:
 
 
 		if (viewType == RenderType::fullMap)
-			map.renderFullMap(mapSize, playerPos, coockes);
+			map.renderFullMap(mapSize, playerPos, cookies);
 
 		if (viewType == RenderType::yanMoment)
-			map.renderYan(mapSize, playerPos, coockes, viewSize);
+			map.renderYan(mapSize, playerPos, cookies, viewSize);
 
 		if (viewType == RenderType::twoView)
-			map.renderTwo(mapSize, playerPos, coockes, viewSize);
+			map.renderTwo(mapSize, playerPos, cookies, viewSize);
 	}
-	//Changes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 	void logic()
 	{
 		Logic gameLogic;
 
-		coockes = gameLogic.eatCookies(coockes, playerPos);
+		cookies = gameLogic.eatCookies(cookies, playerPos);
 
-		
+
 	}
-	//Changes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	void printNumberOfCookies()
+	{
+		std::cout << "Number of cookies = " << cookies.size() << std::endl;
+	}
+
+	void eatenCookies()
+	{
+		if (numberCookies != cookies.size())
+		{
+			eatCookies = numberCookies - cookies.size();
+			
+		}
+		std::cout << "Eaten cookies = " << eatCookies << std::endl;
+	}
+
 };
 
 
@@ -377,15 +378,16 @@ int main()
 	//Processed Frames Count
 	int PFC = 0;
 
-	Game game(map.mapSize, map.obj.get_playerPos(), map.obj.get_cookesPos());
+	Game game(map.mapSize, map.obj.get_playerPos(), map.obj.get_cookiesPos());
 
 	while (true)
 	{
 		system("cls");
 
 		std::cout << "PFC = [" << PFC << "]" << std::endl;
-
 		game.logic();
+		game.printNumberOfCookies();
+		game.eatenCookies();
 		game.renderMap();
 		game.showPosPlayer();
 		game.control(MoveType::input);
