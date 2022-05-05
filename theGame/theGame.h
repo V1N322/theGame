@@ -6,3 +6,6 @@
 #include "coordinates.h"
 #include "Windows.h"
 #include <ios>
+#include <random>
+#include <time.h>
+#include "Map.h"

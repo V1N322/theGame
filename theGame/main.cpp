@@ -1,44 +1,5 @@
 ﻿#include "theGame.h"
 
-class Actor
-{
-  Coordinates actorPos = Coordinates(25, 25);
-
-public:
-	Coordinates get_actorPos() { return actorPos;}
-};
-
-class OBJ
-{
-public:
-  Actor player;
-  Coordinates playerPos = player.get_actorPos();
-
-	std::list<Coordinates> cookies = { Coordinates(26, 26), Coordinates(23, 24), Coordinates(22, 23), Coordinates(23, 25)};
-
-public:
-	Coordinates get_playerPos()
-	{
-		return playerPos;
-	}
-
-	std::list<Coordinates> get_cookiesPos()
-	{
-		return cookies;
-	}
-};
-
-class Map
-{
-public:
-	Coordinates mapSize = Coordinates(50, 50);
-
-	OBJ obj;
-
-};
-
-
-
 
 enum class MoveType
 {
@@ -50,21 +11,32 @@ enum class RenderType
 {
 	fullMap,
 	yanMoment,
-	twoView
+	twoView,
+	inventory
 };
 
-RenderType viewType = RenderType::fullMap;
+RenderType viewType = RenderType::yanMoment;
 
-void changeView()
+void changeView(char pressedButton = 'n')
 {
-	if (viewType == RenderType::fullMap)
+	//if (viewType == RenderType::fullMap)
+		//viewType = RenderType::yanMoment;
+
+	if (viewType != RenderType::yanMoment && pressedButton == 'n')
 		viewType = RenderType::yanMoment;
 
-	else if (viewType == RenderType::yanMoment)
-		viewType = RenderType::twoView;
+	else if (pressedButton == 'v')
+	{
+		if (viewType == RenderType::inventory)
+			viewType = RenderType::yanMoment;
+		else
+			viewType = RenderType::inventory;
+	}
+	
 
-	else if (viewType == RenderType::twoView)
-		viewType = RenderType::fullMap;
+
+	//else if (viewType == RenderType::twoView)
+		//viewType = RenderType::fullMap;
 }
 
 class Render
@@ -80,7 +52,7 @@ class Render
 	void buildBaseFull(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies)
 	{
 
-		for(int b = 0; b != mapSize.y; b++){
+		for (int b = 0; b != mapSize.y; b++) {
 
 			std::cout << '*';
 
@@ -90,36 +62,36 @@ class Render
 				for (Coordinates n : cookies) {
 					if (n.x == i && n.y == b)
 					{
-									if (n.x == playerPos.x &&
-										n.y == playerPos.y)
-									  1 + 2;
+						if (n.x == playerPos.x &&
+							n.y == playerPos.y)
+							1 + 2;
 						else
 							std::cout << '0';
-						
+
 						cellhasCookies = true;
 					}
 				}
-				
-				
+
+
 				if (b == playerPos.y && i == playerPos.x) {
 
 					std::cout << 'P';
 
 				}
 
-					
+
 
 				else {
 					if (cellhasCookies == false)
-					std::cout << ' ';
-						
+						std::cout << ' ';
+
 				}
-					
-					
-			
+
+
+
 
 				std::cout << ' ';
-				
+
 			}
 			std::cout << '*';
 
@@ -137,25 +109,36 @@ class Render
 
 public:
 
-	void buildYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize)
+	void buildYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize, Map obj)
 	{
-		
-		for (int y = viewSize - viewSize*2; y != viewSize + 1; ++y)
+		std::list<Coordinates>thornsPos = obj.obj.thorns.get_thornsPos();
+
+		for (int y = viewSize - viewSize * 2; y != viewSize + 1; ++y)
 		{
-		  for (int x = -viewSize; x != viewSize + 1; ++x)
-		  {
+			for (int x = -viewSize; x != viewSize + 1; ++x)
+			{
 				int X = x + playerPos.x;
 				int Y = y + playerPos.y;
-	
+
 
 				std::cout << " ";
 
 
 				bool hasCookies = false;
+				bool hasThorns = false;
+
+				for (Coordinates n : thornsPos)
+				{
+					if (X == n.x && Y == n.y)
+					{
+						hasThorns = true;
+						break;
+					}
+				}
 
 				for (Coordinates n : cookies)
 				{
-					if (X == n.x && Y == n.y){
+					if (X == n.x && Y == n.y) {
 						hasCookies = true;
 						break;
 					}
@@ -165,22 +148,39 @@ public:
 					std::cout << 'P';
 
 				else if (hasCookies)
-					std::cout << "•";
+					std::cout << "X";
+
+				else if (hasThorns)
+					std::cout << "*";
+
+				else if (X == obj.obj.frogPos.x && Y == obj.obj.frogPos.y)
+					std::cout << obj.obj.viewFrog;
 
 				else if (X <= -1 || X >= mapSize.x || Y <= -1 || Y >= mapSize.y)
 					std::cout << '~';
 
 				else
 					std::cout << ' ';
-					
+
 
 				std::cout << " ";
-		  }
-		  std::cout << '\n';
-		  
-		}
-		
+			}
+			std::cout << '\n';
 
+		}
+
+
+	}
+
+public:
+	void buildInventory(Inventory inventory)
+	{
+		std::cout << "        " << "INVENTORY" << '\n';
+
+		for (char n : inventory.get_items())
+
+			std::cout << '[' << n << ']';
+		std::cout << '\n';
 	}
 
 public:
@@ -194,20 +194,25 @@ public:
 		buildDownFull(mapSize);
 	}
 
-	void renderYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize)
+	void renderYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize, Map obj)
 	{
-		buildYan(mapSize, playerPos, cookies, viewSize);
+		buildYan(mapSize, playerPos, cookies, viewSize, obj);
 
 	}
 
-	void renderTwo(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize)
+	void renderTwo(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize, Map obj)
 	{
-		renderYan(mapSize, playerPos, cookies, viewSize);
+		renderYan(mapSize, playerPos, cookies, viewSize, obj);
 		renderFullMap(mapSize, playerPos, cookies);
+	}
+
+	void inventory(Inventory items)
+	{
+		buildInventory(items);
 	}
 };
 
-
+int frogJumpInt = 0;
 
 class Button
 {
@@ -224,22 +229,20 @@ class Move
 {
 public:
 
-	auto inputStep(Coordinates mapSize, Coordinates playerPos) 
+	auto inputStep(Coordinates mapSize, Coordinates playerPos)
 	{
 		Coordinates newPos(playerPos.x, playerPos.y);
-
-
 
 		Button button;
 
 		char buttonPressed = button.isPressed();
 
-		if (buttonPressed == 'w'){
+		if (buttonPressed == 'w') {
 			--newPos.y;
 			if (newPos.y == -1)
 				++newPos.y;
 		}
-		if (buttonPressed == 'a')	
+		if (buttonPressed == 'a')
 		{
 			--newPos.x;
 			if (newPos.x == -1)
@@ -251,7 +254,7 @@ public:
 			++newPos.y;
 			if (newPos.y == mapSize.y)
 				--newPos.y;
-			}
+		}
 
 		if (buttonPressed == 'd')
 		{
@@ -264,10 +267,11 @@ public:
 		{
 			changeView();
 		}
-			
-		
 
-		
+		if (buttonPressed == 'v')
+		{
+			changeView('v');
+		}
 
 		return newPos;
 	}
@@ -286,10 +290,86 @@ public:
 			{
 				resultList.push_back(n);
 			}
+			else
+				std::cout << "You are eaten cookies and restored One hit point" << '\n';
 		}
 
 		return resultList;
 	}
+
+	int stepOnThorns(Coordinates playerPos, Map obj)
+	{
+		int hp = obj.obj.player.actorHP.HP;
+
+		for (Coordinates n : obj.obj.thorns.get_thornsPos())
+		{
+			if (n.x == playerPos.x && n.y == playerPos.y)
+			{
+				hp = hp - obj.obj.thorns.get_thornsDamage();
+			}
+		}
+		return hp;
+	}
+
+	Coordinates frogJump(Map obj)
+	{
+		
+
+
+			if (frogJumpInt != 3)
+			{
+				if (frogJumpInt == 0)
+				{
+					
+					obj.obj.frogPos.y = --obj.obj.frogPos.y;
+				}
+
+				else if (frogJumpInt == 1)
+				{
+					obj.obj.frogPos.y = ++obj.obj.frogPos.y;
+				}
+
+
+				++frogJumpInt;
+			}
+
+			if (frogJumpInt == 2)
+				frogJumpInt = 0;
+			
+		
+		return obj.obj.frogPos;
+		
+	}
+	
+	Inventory takeFrog(Map obj, Coordinates playerPos, Inventory inventory)
+	{
+		if (obj.obj.frogPos.y == playerPos.y && obj.obj.frogPos.x == playerPos.x)
+		{
+			inventory.add_items('8');
+		}
+		return inventory;
+	}
+	
+	Coordinates hideFrog(Map obj, Coordinates playerPos)
+	{
+		if (obj.obj.frogPos.y == playerPos.y && obj.obj.frogPos.x == playerPos.x)
+		{
+			obj.obj.frogPos.x = -1000;
+			obj.obj.frogPos.y = -1000;
+		}
+		return obj.obj.frogPos;
+	}
+
+	bool playerIsDead(Coordinates playerPos, Map obj)
+	{
+		if (obj.obj.player.actorHP.HP != obj.obj.player.actorHP.minHP)
+			return false;
+		if (obj.obj.player.actorHP.HP <= obj.obj.player.actorHP.minHP)
+			return true;
+
+		return false;
+	}
+
 };
 
 class Game
@@ -301,9 +381,14 @@ public:
 	int viewSize = 6;
 	int numberCookies = cookies.size();
 	int eatCookies = 0;
+	int healthReplenished = 0;
+	bool isEnd = false;
+	Inventory inventory;
+	Map objects;
 
-	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const std::list<Coordinates>& aCookies)
-		:mapSize(aMapSize), playerPos(aPlayerPos), cookies(aCookies)
+
+	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const std::list<Coordinates>& aCookies, const Map& aObjects)
+		:mapSize(aMapSize), playerPos(aPlayerPos), cookies(aCookies), objects(aObjects)
 	{
 		mapSize = aMapSize;
 		playerPos = aPlayerPos;
@@ -336,11 +421,16 @@ public:
 			map.renderFullMap(mapSize, playerPos, cookies);
 
 		if (viewType == RenderType::yanMoment)
-			map.renderYan(mapSize, playerPos, cookies, viewSize);
+			map.renderYan(mapSize, playerPos, cookies, viewSize, objects);
 
 		if (viewType == RenderType::twoView)
-			map.renderTwo(mapSize, playerPos, cookies, viewSize);
+			map.renderTwo(mapSize, playerPos, cookies, viewSize, objects);
+
+		if (viewType == RenderType::inventory)
+			map.inventory(inventory);
 	}
+
+
 
 	void logic()
 	{
@@ -348,7 +438,15 @@ public:
 
 		cookies = gameLogic.eatCookies(cookies, playerPos);
 
+		objects.obj.player.actorHP.HP = gameLogic.stepOnThorns(playerPos, objects);
 
+		objects.obj.frogPos = gameLogic.frogJump(objects);
+
+		inventory = gameLogic.takeFrog(objects, playerPos, inventory);
+
+		objects.obj.frogPos = gameLogic.hideFrog(objects, playerPos);
+
+		isEnd = gameLogic.playerIsDead(playerPos, objects);
 	}
 
 	void printNumberOfCookies()
@@ -361,16 +459,38 @@ public:
 		if (numberCookies != cookies.size())
 		{
 			eatCookies = numberCookies - cookies.size();
-			
 		}
-		std::cout << "Eaten cookies = " << eatCookies << std::endl;
+	}
+
+	void printHpPlayer()
+	{
+		std::cout << objects.obj.player.actorHP.HP << "% HP" << std::endl;
+	}
+
+	void setHP(int HP)
+	{
+
+		objects.obj.player.actorHP.HP = HP;
+
+	}
+
+	void cookieCure(int HP)
+	{
+		if (eatCookies != healthReplenished)
+		{
+			objects.obj.player.actorHP.HP = objects.obj.player.actorHP.HP + HP;
+			++healthReplenished;
+
+			if (objects.obj.player.actorHP.HP > objects.obj.player.actorHP.maxHP)
+			{
+				objects.obj.player.actorHP.HP = objects.obj.player.actorHP.HP - HP;
+			}
+		}
 	}
 
 };
 
-
-
-int main()
+void start()
 {
 
 	Map map;
@@ -378,24 +498,40 @@ int main()
 	//Processed Frames Count
 	int PFC = 0;
 
-	Game game(map.mapSize, map.obj.get_playerPos(), map.obj.get_cookiesPos());
+	//map.obj.addCookies();
+	Game game(map.mapSize, map.obj.get_playerPos(), map.obj.get_cookiesPos(), map);
+	
+	game.setHP(1);
 
-	while (true)
+	while (game.isEnd == false)
 	{
 		system("cls");
 
 		std::cout << "PFC = [" << PFC << "]" << std::endl;
-		game.logic();
-		game.printNumberOfCookies();
 		game.eatenCookies();
+		game.cookieCure(1);
+
+		game.logic();
+
 		game.renderMap();
-		game.showPosPlayer();
+
+		game.printHpPlayer();
+
 		game.control(MoveType::input);
-		
-		
-	
+
+
+
 		++PFC;
 	}
+	system("cls");
+	std::cout << "You are dead!";
+
+}
+
+int main()
+{
+
+	start();
 
 	return 0;
 }
