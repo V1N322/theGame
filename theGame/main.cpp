@@ -237,26 +237,26 @@ public:
 
 		char buttonPressed = button.isPressed();
 
-		if (buttonPressed == 'w') {
+		if (buttonPressed == 'w' && viewType != RenderType::inventory) {
 			--newPos.y;
 			if (newPos.y == -1)
 				++newPos.y;
 		}
-		if (buttonPressed == 'a')
+		if (buttonPressed == 'a' && viewType != RenderType::inventory)
 		{
 			--newPos.x;
 			if (newPos.x == -1)
 				++newPos.x;
 		}
 
-		if (buttonPressed == 's')
+		if (buttonPressed == 's' && viewType != RenderType::inventory)
 		{
 			++newPos.y;
 			if (newPos.y == mapSize.y)
 				--newPos.y;
 		}
 
-		if (buttonPressed == 'd')
+		if (buttonPressed == 'd' && viewType != RenderType::inventory)
 		{
 			++newPos.x;
 			if (newPos.x == mapSize.x)
@@ -386,6 +386,7 @@ public:
 	Inventory inventory;
 	Map objects;
 
+	
 
 	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const std::list<Coordinates>& aCookies, const Map& aObjects)
 		:mapSize(aMapSize), playerPos(aPlayerPos), cookies(aCookies), objects(aObjects)
@@ -429,8 +430,6 @@ public:
 		if (viewType == RenderType::inventory)
 			map.inventory(inventory);
 	}
-
-
 
 	void logic()
 	{

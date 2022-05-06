@@ -57,7 +57,7 @@ public:
 class Frog
 {
 	char view = '8';
-	Coordinates frogPos =  Coordinates(23, 23);
+	Coordinates frogPos;
 	int jump = 0;
 
 
@@ -78,9 +78,108 @@ public:
 	}
 };	
 
+class Stick
+{
+
+public:
+	Stick();
+
+	Coordinates pos;
+	char view = '-';
+	std::string name = "Stick";
+
+};
+
+class Items
+{
+	std::list<Stick> sticks; 
+	
+public:
+	void add_stick(Coordinates pos, char symbol, std::string name)
+	{ 
+		Stick stick;
+
+		stick.pos = pos;
+		stick.view = symbol;
+		stick.name = name;
+		sticks.push_back(stick);
+	}
+
+	std::list<Stick> get_sticks()
+	{
+
+		return sticks;
+	}
+
+	Coordinates get_posStick(int numStick)
+	{
+		int num = 0;
+		for (Stick n : sticks)
+		{
+			if (num > numStick)
+			{
+				if (num == numStick)
+					return n.pos;
+				++num;
+			}
+				
+		}
+		return Coordinates(0, 0);
+	}
+
+	char get_viewStick(int numStick)
+	{
+		int num = 0;
+		for (Stick n : sticks)
+		{
+			if (num > numStick)
+			{
+				if (num == numStick)
+					return n.view;
+				++num;
+			}
+		}
+		return '-';
+	}
+
+	std::string get_name(int numStick)
+	{
+		int num = 0;
+		for (Stick n : sticks)
+		{
+			if (num > numStick)
+			{
+				if (num == numStick)
+					return n.name;
+				++num;
+			}
+				
+		}
+		return "Stick";
+	}
+
+	void set_stickPos(int numStick, Coordinates pos)
+	{
+
+		std::list<Stick> resultList;
+		int num = 0;
+		for (Stick n : sticks)
+		{
+			if (num == numStick)
+			{
+				n.pos = pos;
+				resultList.push_back(n);
+			}
+			resultList.push_back(n);
+			++num;
+		}
+	}
+};
+
 class OBJ
 {
 public:
+	
 	Actor player;
 	Thorn thorns;
 	Frog frog;
@@ -118,11 +217,15 @@ public:
 
 class Map
 {
+
 public:
+	Map();
+
 	Coordinates mapSize = Coordinates(50, 50);
 
 	OBJ obj;
 
+	Items item;
 };
 
 class Inventory
