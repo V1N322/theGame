@@ -1,5 +1,4 @@
 #pragma once
-#include "theGame.h"
 
 int randInt(int min, int max)
 {
@@ -38,194 +37,161 @@ public:
 
 };
 
-class Thorn
-{
-	int damage = 1;
-	std::list<Coordinates> ThornsPos = {Coordinates(24, 24)};
+
+class Item {
+Coordinates pos;
+
+protected:
+	Coordinates itemPos()
+	{
+		return pos;
+	}
 
 public:
-	std::list<Coordinates> get_thornsPos()
+    Item(int x, int y)
+        : pos(x, y)
+        
+    {
+
+    }
+
+	Item()
+		: pos(0, 0)
 	{
-		return ThornsPos;
+
 	}
-	int get_thornsDamage()
-	{
-		return damage;
-	}
+
+    virtual ~Item()
+    {
+		
+    }
+
+	virtual Coordinates get_pos() = 0;
+
+	virtual std::string get_name() = 0;
+
+	virtual char get_view() = 0;
 };
 
-class Frog
-{
-	char view = '8';
-	Coordinates frogPos;
-	int jump = 0;
+class Stick : public Item {
 
+	std::string name = "stick";
+	char view;
 
 public:
-	Coordinates get_frogPos()
+    Stick(Coordinates pos)
+        : Item(pos.x, pos.y)
+    {
+    }
+	Stick(int x, int y)
+		: Item(x, y)
 	{
-		return frogPos;
+	}
+	Stick()
+	{
+	}
+	
+	
+	Coordinates get_pos()
+	{
+		return itemPos();
 	}
 
-	char viewFrog()
+	std::string get_name()
+	{
+		return name;
+	}
+	
+	char get_view()
 	{
 		return view;
 	}
 
-	int jumpEd()
-	{
-		return jump;
-	}
-};	
-
-class Stick
-{
-
-public:
-	Stick();
-
-	Coordinates pos;
-	char view = '-';
-	std::string name = "Stick";
-
 };
 
-class Items
-{
-	std::list<Stick> sticks; 
-	
-public:
-	void add_stick(Coordinates pos, char symbol, std::string name)
-	{ 
-		Stick stick;
 
-		stick.pos = pos;
-		stick.view = symbol;
-		stick.name = name;
-		sticks.push_back(stick);
-	}
 
-	std::list<Stick> get_sticks()
-	{
-
-		return sticks;
-	}
-
-	Coordinates get_posStick(int numStick)
-	{
-		int num = 0;
-		for (Stick n : sticks)
-		{
-			if (num > numStick)
-			{
-				if (num == numStick)
-					return n.pos;
-				++num;
-			}
-				
-		}
-		return Coordinates(0, 0);
-	}
-
-	char get_viewStick(int numStick)
-	{
-		int num = 0;
-		for (Stick n : sticks)
-		{
-			if (num > numStick)
-			{
-				if (num == numStick)
-					return n.view;
-				++num;
-			}
-		}
-		return '-';
-	}
-
-	std::string get_name(int numStick)
-	{
-		int num = 0;
-		for (Stick n : sticks)
-		{
-			if (num > numStick)
-			{
-				if (num == numStick)
-					return n.name;
-				++num;
-			}
-				
-		}
-		return "Stick";
-	}
-
-	void set_stickPos(int numStick, Coordinates pos)
-	{
-
-		std::list<Stick> resultList;
-		int num = 0;
-		for (Stick n : sticks)
-		{
-			if (num == numStick)
-			{
-				n.pos = pos;
-				resultList.push_back(n);
-			}
-			resultList.push_back(n);
-			++num;
-		}
-	}
-};
 
 class OBJ
 {
 public:
-	
+
 	Actor player;
-	Thorn thorns;
-	Frog frog;
-	Coordinates frogPos = frog.get_frogPos();
-	char viewFrog = frog.viewFrog();
-	int frogJump = frog.jumpEd();
 	Coordinates playerPos = player.get_actorPos();
-	int numberOfCookies = randInt(10, 30);
-	std::list<Coordinates> thornsPos = thorns.get_thornsPos();
-	int thornsDamage = thorns.get_thornsDamage();
 
-	std::list<Coordinates> cookies = { Coordinates(26, 26), Coordinates(23, 24), Coordinates(22, 23), Coordinates(23, 25) };
-
-
-	void addCookies() {
-
-		while (numberOfCookies != 0)
-		{
-			cookies.push_back(Coordinates(randInt(0, 50), randInt(0, 50)));
-			--numberOfCookies;
-		}
-	}
-
-public:
-	Coordinates get_playerPos()
-	{
-		return playerPos;
-	}
-
-	std::list<Coordinates> get_cookiesPos()
-	{
-		return cookies;
-	}
 };
 
 class Map
 {
+	std::list<std::shared_ptr<Item>> items;
 
 public:
-	Map();
+	Map()
+	{
+	}
+
 
 	Coordinates mapSize = Coordinates(50, 50);
 
 	OBJ obj;
 
-	Items item;
+	void add_stick(int x, int y)
+	{
+		items.push_back(std::make_shared<Stick>(x, y));
+	}
+
+	std::string get_name(int numItem)
+	{
+		int num = 0;
+
+		std::string result = "NONE";
+
+		for (const auto& item : items)
+		{
+			if (num == numItem) {
+				result = item->get_name();
+				break;
+			}
+			++num;
+		}
+		
+		return result;
+	}
+
+	std::list<std::shared_ptr<Item>> get_items()
+	{
+		return items;
+	}
+
+	std::list<std::shared_ptr<Item>> clear_items()
+	{
+		items.clear();
+	}
+
+	void deleteItem(const Coordinates& playerPos)
+	{
+		for (auto it = items.begin(); it != items.end(); ++it) {
+			if ((*it)->get_pos().x == playerPos.x && (*it)->get_pos().y == playerPos.y) {
+				items.erase(it);
+			}
+		}
+	}
+
+	char takeItem(Coordinates playerPos)
+	{
+
+		for (auto it = items.begin(); it != items.end(); ++it) {
+
+			if ((*it)->get_pos().x == playerPos.y && (*it)->get_pos().x == playerPos.y)
+			{
+				char symbol =  (*it)->get_view();
+				deleteItem(playerPos);
+				return symbol;
+			}
+			return '0';
+		}
+	}
+	
 };
 
 class Inventory

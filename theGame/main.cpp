@@ -1,6 +1,5 @@
 ﻿#include "theGame.h"
 
-
 enum class MoveType
 {
 	oneStep,
@@ -46,10 +45,10 @@ class Render
 	{
 		for (int i = -2; i != mapSize.x * 2; ++i)
 			std::cout << '*';
-		std::cout << std::endl;
+		std::cout << '\n';
 	}
 
-	void buildBaseFull(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies)
+	void buildBaseFull(Coordinates mapSize, Coordinates playerPos)
 	{
 
 		for (int b = 0; b != mapSize.y; b++) {
@@ -58,60 +57,36 @@ class Render
 
 			for (int i = 0; i != mapSize.x; ++i)
 			{
-				bool cellhasCookies = false;
-				for (Coordinates n : cookies) {
-					if (n.x == i && n.y == b)
-					{
-						if (n.x == playerPos.x &&
-							n.y == playerPos.y)
-							1 + 2;
-						else
-							std::cout << '0';
 
-						cellhasCookies = true;
-					}
-				}
 
 
 				if (b == playerPos.y && i == playerPos.x) {
 
 					std::cout << 'P';
 
-				}
 
-
-
-				else {
-					if (cellhasCookies == false)
-						std::cout << ' ';
+					std::cout << ' ';
 
 				}
+				std::cout << '*';
 
-
-
-
-				std::cout << ' ';
-
+				std::cout << '\n';
 			}
-			std::cout << '*';
 
-			std::cout << std::endl;
 		}
-
 	}
 
 	void buildDownFull(Coordinates mapSize)
 	{
 		for (int i = -2; i != mapSize.x * 2; ++i)
 			std::cout << '*';
-		std::cout << std::endl;
+		std::cout << '\n';
 	}
 
 public:
 
-	void buildYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize, Map obj)
+	void buildYan(Coordinates mapSize, Coordinates playerPos, int viewSize, Map obj)
 	{
-		std::list<Coordinates>thornsPos = obj.obj.thorns.get_thornsPos();
 
 		for (int y = viewSize - viewSize * 2; y != viewSize + 1; ++y)
 		{
@@ -120,41 +95,32 @@ public:
 				int X = x + playerPos.x;
 				int Y = y + playerPos.y;
 
+				auto& items = obj.get_items();
 
 				std::cout << " ";
+				
+				bool hasStick = false;
 
-
-				bool hasCookies = false;
-				bool hasThorns = false;
-
-				for (Coordinates n : thornsPos)
+				for (const auto& item : items)
 				{
-					if (X == n.x && Y == n.y)
+					int num = 0;
+					if (item->get_pos().x == X && item->get_pos().y == Y) 
 					{
-						hasThorns = true;
-						break;
+						if (item->get_name() == "stick")
+						{
+							hasStick = true;
+						}
+						
 					}
-				}
-
-				for (Coordinates n : cookies)
-				{
-					if (X == n.x && Y == n.y) {
-						hasCookies = true;
-						break;
-					}
+					++num;
 				}
 
 				if (X == playerPos.x && Y == playerPos.y)
 					std::cout << 'P';
 
-				else if (hasCookies)
-					std::cout << "X";
+				else if (hasStick)
+					std::cout << '-';
 
-				else if (hasThorns)
-					std::cout << "*";
-
-				else if (X == obj.obj.frogPos.x && Y == obj.obj.frogPos.y)
-					std::cout << obj.obj.viewFrog;
 
 				else if (X <= -1 || X >= mapSize.x || Y <= -1 || Y >= mapSize.y)
 					std::cout << '~';
@@ -184,26 +150,26 @@ public:
 	}
 
 public:
-	void renderFullMap(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies)
+	void renderFullMap(Coordinates mapSize, Coordinates playerPos)
 	{
 
 		buildUpFull(mapSize);
 
-		buildBaseFull(mapSize, playerPos, cookies);
+		buildBaseFull(mapSize, playerPos);
 
 		buildDownFull(mapSize);
 	}
 
-	void renderYan(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize, Map obj)
+	void renderYan(Coordinates mapSize, Coordinates playerPos, int viewSize, Map obj)
 	{
-		buildYan(mapSize, playerPos, cookies, viewSize, obj);
+		buildYan(mapSize, playerPos, viewSize, obj);
 
 	}
 
-	void renderTwo(Coordinates mapSize, Coordinates playerPos, std::list<Coordinates> cookies, int viewSize, Map obj)
+	void renderTwo(Coordinates mapSize, Coordinates playerPos, int viewSize, Map obj)
 	{
-		renderYan(mapSize, playerPos, cookies, viewSize, obj);
-		renderFullMap(mapSize, playerPos, cookies);
+		renderYan(mapSize, playerPos, viewSize, obj);
+		renderFullMap(mapSize, playerPos);
 	}
 
 	void inventory(Inventory items)
@@ -234,6 +200,7 @@ public:
 		Coordinates newPos(playerPos.x, playerPos.y);
 
 		Button button;
+
 
 		char buttonPressed = button.isPressed();
 
@@ -280,85 +247,6 @@ public:
 class Logic
 {
 public:
-	std::list<Coordinates> eatCookies(std::list<Coordinates> listCookies, Coordinates playerPos)
-	{
-		std::list<Coordinates> resultList;
-
-		for (Coordinates n : listCookies)
-		{
-			if (n.x != playerPos.x || n.y != playerPos.y)
-			{
-				resultList.push_back(n);
-			}
-			else
-				std::cout << "You are eaten cookies and restored One hit point" << '\n';
-		}
-
-		return resultList;
-	}
-
-	int stepOnThorns(Coordinates playerPos, Map obj)
-	{
-		int hp = obj.obj.player.actorHP.HP;
-
-		for (Coordinates n : obj.obj.thorns.get_thornsPos())
-		{
-			if (n.x == playerPos.x && n.y == playerPos.y)
-			{
-				hp = hp - obj.obj.thorns.get_thornsDamage();
-			}
-		}
-		return hp;
-	}
-
-	Coordinates frogJump(Map obj)
-	{
-		
-
-
-			if (frogJumpInt != 3)
-			{
-				if (frogJumpInt == 0)
-				{
-					
-					obj.obj.frogPos.y = --obj.obj.frogPos.y;
-				}
-
-				else if (frogJumpInt == 1)
-				{
-					obj.obj.frogPos.y = ++obj.obj.frogPos.y;
-				}
-
-
-				++frogJumpInt;
-			}
-
-			if (frogJumpInt == 2)
-				frogJumpInt = 0;
-			
-		
-		return obj.obj.frogPos;
-		
-	}
-	
-	Inventory takeFrog(Map obj, Coordinates playerPos, Inventory inventory)
-	{
-		if (obj.obj.frogPos.y == playerPos.y && obj.obj.frogPos.x == playerPos.x)
-		{
-			inventory.add_items('8');
-		}
-		return inventory;
-	}
-	
-	Coordinates hideFrog(Map obj, Coordinates playerPos)
-	{
-		if (obj.obj.frogPos.y == playerPos.y && obj.obj.frogPos.x == playerPos.x)
-		{
-			obj.obj.frogPos.x = -1000;
-			obj.obj.frogPos.y = -1000;
-		}
-		return obj.obj.frogPos;
-	}
 
 	bool playerIsDead(Coordinates playerPos, Map obj)
 	{
@@ -370,6 +258,14 @@ public:
 		return false;
 	}
 
+	char takeItem(Coordinates playerPos, Map& map)
+	{
+		char symbol = map.takeItem(playerPos);
+
+		return symbol;
+	}
+
+
 };
 
 class Game
@@ -377,30 +273,25 @@ class Game
 public:
 	Coordinates mapSize;
 	Coordinates playerPos;
-	std::list<Coordinates> cookies;
 	int viewSize = 6;
-	int numberCookies = cookies.size();
-	int eatCookies = 0;
-	int healthReplenished = 0;
 	bool isEnd = false;
 	Inventory inventory;
-	Map objects;
+	Map mapOBJ;
 
 	
 
-	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const std::list<Coordinates>& aCookies, const Map& aObjects)
-		:mapSize(aMapSize), playerPos(aPlayerPos), cookies(aCookies), objects(aObjects)
+	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos, const Map& aObjects)
+		:mapSize(aMapSize), playerPos(aPlayerPos), mapOBJ(aObjects)
 	{
 		mapSize = aMapSize;
 		playerPos = aPlayerPos;
-		cookies = aCookies;
 	}
 
 
 public:
 	void showPosPlayer()
 	{
-		std::cout << "the player is on " << "[X = " << playerPos.x << ", Y = " << playerPos.y << "]" << std::endl;
+		std::cout << "the player is on " << "[X = " << playerPos.x << ", Y = " << playerPos.y << "]" << '\n';
 	}
 
 	void control(MoveType moveType)
@@ -419,13 +310,13 @@ public:
 
 
 		if (viewType == RenderType::fullMap)
-			map.renderFullMap(mapSize, playerPos, cookies);
+			map.renderFullMap(mapSize, playerPos);
 
 		if (viewType == RenderType::yanMoment)
-			map.renderYan(mapSize, playerPos, cookies, viewSize, objects);
+			map.renderYan(mapSize, playerPos, viewSize, mapOBJ);
 
 		if (viewType == RenderType::twoView)
-			map.renderTwo(mapSize, playerPos, cookies, viewSize, objects);
+			map.renderTwo(mapSize, playerPos, viewSize, mapOBJ);
 
 		if (viewType == RenderType::inventory)
 			map.inventory(inventory);
@@ -435,61 +326,36 @@ public:
 	{
 		Logic gameLogic;
 
-		cookies = gameLogic.eatCookies(cookies, playerPos);
+		char item = gameLogic.takeItem(playerPos, mapOBJ);
 
-		objects.obj.player.actorHP.HP = gameLogic.stepOnThorns(playerPos, objects);
+		inventory.add_items(item);
 
-		objects.obj.frogPos = gameLogic.frogJump(objects);
-
-		inventory = gameLogic.takeFrog(objects, playerPos, inventory);
-
-		objects.obj.frogPos = gameLogic.hideFrog(objects, playerPos);
-
-		isEnd = gameLogic.playerIsDead(playerPos, objects);
+		isEnd = gameLogic.playerIsDead(playerPos, mapOBJ);
 	}
 
-	void printNumberOfCookies()
+	void add_items()
 	{
-		std::cout << "Number of cookies = " << cookies.size() << std::endl;
-	}
-
-	void eatenCookies()
-	{
-		if (numberCookies != cookies.size())
-		{
-			eatCookies = numberCookies - cookies.size();
-		}
+		mapOBJ.add_stick(24, 24);
 	}
 
 	void printHpPlayer()
 	{
-		std::cout << objects.obj.player.actorHP.HP << "% HP" << std::endl;
+		std::cout << mapOBJ.obj.player.actorHP.HP << "% HP" << '\n';
 	}
 
 	void setHP(int HP)
 	{
 
-		objects.obj.player.actorHP.HP = HP;
+		mapOBJ.obj.player.actorHP.HP = HP;
 
 	}
 
-	void cookieCure(int HP)
-	{
-		if (eatCookies != healthReplenished)
-		{
-			objects.obj.player.actorHP.HP = objects.obj.player.actorHP.HP + HP;
-			++healthReplenished;
-
-			if (objects.obj.player.actorHP.HP > objects.obj.player.actorHP.maxHP)
-			{
-				objects.obj.player.actorHP.HP = objects.obj.player.actorHP.HP - HP;
-			}
-		}
-	}
 
 };
 
-void start()
+
+
+int main()
 {
 
 	Map map;
@@ -498,19 +364,22 @@ void start()
 	int PFC = 0;
 
 	//map.obj.addCookies();
-	Game game(map.mapSize, map.obj.get_playerPos(), map.obj.get_cookiesPos(), map);
-	
+	Game game(map.mapSize, map.obj.playerPos, map);
+
 	game.setHP(1);
+
+	game.add_items();
+
 
 	while (game.isEnd == false)
 	{
+	
 		system("cls");
 
-		std::cout << "PFC = [" << PFC << "]" << std::endl;
-		game.eatenCookies();
-		game.cookieCure(1);
+		std::cout << "PFC = [" << PFC << "]" << '\n';
 
 		game.logic();
+
 
 		game.renderMap();
 
@@ -524,13 +393,6 @@ void start()
 	}
 	system("cls");
 	std::cout << "You are dead!";
-
-}
-
-int main()
-{
-
-	start();
 
 	return 0;
 }

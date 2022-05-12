@@ -9,3 +9,4 @@
 #include <random>
 #include <time.h>
 #include "Map.h"
+#include <memory>
