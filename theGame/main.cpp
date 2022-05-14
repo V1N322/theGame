@@ -193,51 +193,63 @@ public:
 
 class Move
 {
+	
+	
+
 public:
 
 	auto inputStep(Coordinates mapSize, Coordinates playerPos)
 	{
+
+		using KeyState = decltype(GetKeyState('A'));
+		using KeyState = decltype(GetKeyState('W'));
+		using KeyState = decltype(GetKeyState('S'));
+		using KeyState = decltype(GetKeyState('D'));
+		using KeyState = decltype(GetKeyState('V'));
+		KeyState pressedMask = static_cast<KeyState>(1 << (sizeof(KeyState) * CHAR_BIT - 1));
+
 		Coordinates newPos(playerPos.x, playerPos.y);
 
 		Button button;
 
 
-		char buttonPressed = button.isPressed();
+		char buttonPressed = 'f';
 
-		if (buttonPressed == 'w' && viewType != RenderType::inventory) {
+		if ((GetKeyState('W') & pressedMask) != 0 && viewType != RenderType::inventory) {
 			--newPos.y;
 			if (newPos.y == -1)
 				++newPos.y;
 		}
-		if (buttonPressed == 'a' && viewType != RenderType::inventory)
+		if ((GetKeyState('A') & pressedMask) != 0 && viewType != RenderType::inventory)
 		{
 			--newPos.x;
 			if (newPos.x == -1)
 				++newPos.x;
 		}
 
-		if (buttonPressed == 's' && viewType != RenderType::inventory)
+		if ((GetKeyState('S') & pressedMask) != 0 && viewType != RenderType::inventory)
 		{
 			++newPos.y;
 			if (newPos.y == mapSize.y)
 				--newPos.y;
 		}
 
-		if (buttonPressed == 'd' && viewType != RenderType::inventory)
+		if ((GetKeyState('D') & pressedMask) != 0 && viewType != RenderType::inventory)
 		{
 			++newPos.x;
 			if (newPos.x == mapSize.x)
 				--newPos.x;
 		}
 
-		if (buttonPressed == 'n')
+		if ((GetKeyState('N') & pressedMask) != 0)
 		{
 			changeView();
 		}
 
-		if (buttonPressed == 'v')
+		if ((GetKeyState('V') & pressedMask) != 0)
 		{
 			changeView('v');
+			Sleep(100);
 		}
 
 		return newPos;
@@ -260,7 +272,7 @@ public:
 
 	char takeItem(Coordinates playerPos, Map& map)
 	{
-		char symbol = map.takeItem(playerPos);
+		char symbol = map.stepOnItem(playerPos);
 
 		return symbol;
 	}
@@ -328,6 +340,7 @@ public:
 
 		char item = gameLogic.takeItem(playerPos, mapOBJ);
 
+		if (item != '0')
 		inventory.add_items(item);
 
 		isEnd = gameLogic.playerIsDead(playerPos, mapOBJ);

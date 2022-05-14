@@ -71,12 +71,14 @@ public:
 	virtual std::string get_name() = 0;
 
 	virtual char get_view() = 0;
+
+	virtual char step() = 0;
 };
 
 class Stick : public Item {
 
 	std::string name = "stick";
-	char view;
+	char view = '-';
 
 public:
     Stick(Coordinates pos)
@@ -177,19 +179,20 @@ public:
 		}
 	}
 
-	char takeItem(Coordinates playerPos)
+	char stepOnItem(Coordinates playerPos)
 	{
 
 		for (auto it = items.begin(); it != items.end(); ++it) {
 
-			if ((*it)->get_pos().x == playerPos.y && (*it)->get_pos().x == playerPos.y)
+			if ((*it)->get_pos().x == playerPos.x && (*it)->get_pos().y == playerPos.y)
 			{
-				char symbol =  (*it)->get_view();
+				char symbol = (*it)->get_view();
 				deleteItem(playerPos);
 				return symbol;
 			}
-			return '0';
+			
 		}
+		return '0';
 	}
 	
 };
