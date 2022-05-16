@@ -10,3 +10,6 @@
 #include <time.h>
 #include "Map.h"
 #include <memory>
+#include "items.h"
+#include "render.h"
+#include "inventory.h"

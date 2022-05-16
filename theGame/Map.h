@@ -1,145 +1,27 @@
 #pragma once
 
-int randInt(int min, int max)
-{
-	std::uniform_int_distribution<int> distribution(min, max);
-	static std::default_random_engine engine;
-	return distribution(engine);
-}
 
-struct healthPoints
-{
-	int HP;
-	int maxHP;
-	int minHP;
-
-	healthPoints(int hp)
-	{
-		HP = hp;
-		maxHP = HP;
-		minHP = 0;
-	}
-
-};
-
-class Actor
-{
-	Coordinates actorPos = Coordinates(25, 25);
-
-public:
-	healthPoints actorHP = healthPoints(10);
-
-public:
-	int get_HP() { return actorHP.HP; }
-	int get_maxHP() { return actorHP.maxHP; }
-	int get_minHP() { return actorHP.minHP; }
-	Coordinates get_actorPos() { return actorPos; }
-
-};
-
-
-class Item {
-Coordinates pos;
-
-protected:
-	Coordinates itemPos()
-	{
-		return pos;
-	}
-
-public:
-    Item(int x, int y)
-        : pos(x, y)
-        
-    {
-
-    }
-
-	Item()
-		: pos(0, 0)
-	{
-
-	}
-
-    virtual ~Item()
-    {
-		
-    }
-
-	virtual Coordinates get_pos() = 0;
-
-	virtual std::string get_name() = 0;
-
-	virtual char get_view() = 0;
-
-	virtual char step() = 0;
-};
-
-class Stick : public Item {
-
-	std::string name = "stick";
-	char view = '-';
-
-public:
-    Stick(Coordinates pos)
-        : Item(pos.x, pos.y)
-    {
-    }
-	Stick(int x, int y)
-		: Item(x, y)
-	{
-	}
-	Stick()
-	{
-	}
-	
-	
-	Coordinates get_pos()
-	{
-		return itemPos();
-	}
-
-	std::string get_name()
-	{
-		return name;
-	}
-	
-	char get_view()
-	{
-		return view;
-	}
-
-};
-
-
-
-
-class OBJ
-{
-public:
-
-	Actor player;
-	Coordinates playerPos = player.get_actorPos();
-
-};
 
 class Map
 {
 	std::list<std::shared_ptr<Item>> items;
+	Actor player;
+	Coordinates mapSize = Coordinates(50, 50);
 
 public:
 	Map()
 	{
 	}
 
+	
+	Coordinates get_mapSize() 
+	{ 
+		return mapSize; 
+	}
 
-	Coordinates mapSize = Coordinates(50, 50);
-
-	OBJ obj;
-
-	void add_stick(int x, int y)
+	Actor get_actor() 
 	{
-		items.push_back(std::make_shared<Stick>(x, y));
+		return player;
 	}
 
 	std::string get_name(int numItem)
@@ -197,30 +79,3 @@ public:
 	
 };
 
-class Inventory
-{
-public:
-
-	std::list<char> items = {  };
-	int sizeInventory = 3;
-
-	std::list<char> get_items()
-	{
-		return items;
-	}
-
-	void add_items(char item)
-	{
-		items.push_back(item);
-	}
-
-	int get_invrntorySize()
-	{
-		return sizeInventory;
-	}
-
-	void set_invrntorySize(int size)
-	{
-		sizeInventory = size;
-	}
-};
