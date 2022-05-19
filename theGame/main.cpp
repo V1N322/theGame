@@ -1,42 +1,28 @@
-#include "theGame.h"
+﻿#include "theGame.h"
 
-class Game 
-{
-public:
-	Coordinates mapSize;
-	Coordinates playerPos;
 
-	Game(const Coordinates& aMapSize, const Coordinates& aPlayerPos)
-		:mapSize(aMapSize), playerPos(aPlayerPos)
-	{
-		mapSize = aMapSize;
-		playerPos = aPlayerPos;
-	}
-		
-};
+
+
 
 int main()
 {
-
-	Coordinates mapSize(10, 10);
-	Coordinates playerPos(5, 5);
-
-	//Processed Frames Count
 	int PFC = 0;
 
-	Game game(mapSize, playerPos);
+	Game map_one;
+	Controller control(map_one);
 
-	while (true)
-	{
-		std::cout << "FPP = [" << PFC << "]" << std::endl;
-
-		game.input();
-		game.showPosPlayer();
-		
-		
+	map_one.create_map(x, y);
 	
-		++PFC
-	}
+//	map_one.add_player(PlayerState); //пока не уверен в том, что здесь будет
+//	map_one.set_playerStartPos(x, y);
+//	map_one.add_item(Stick(x, y));
+//	map_one.add_wall(StoneMaterial, Coordinates(x, y));
+//	map_one.add_field(StoneMaterial, Coordinates(x, y), Coordinates(x, y));
+	
+	
+	control.start();
+	
+	
 
 	return 0;
 }
