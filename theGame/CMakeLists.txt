@@ -4,6 +4,19 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (game "main.cpp" "theGame.h" "position/coordinates.h"      "Map.h" "items.h" "inventory.h"  "render.h" "coordinates.cpp" "control.h" "control.cpp" "game.h")
+add_executable (game
+    main.cpp
+    theGame.h
+    coordinates.h
+    Map.h
+    items.h
+    inventory.h
+    render.h
+    render.cpp
+    control.h
+    control.cpp
+    game.h
+    game.cpp
+)
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.

@@ -1,11 +1,12 @@
 #pragma once
 
-class Game
-{
-	Coordinates mapSize;
+#include "coordinates.h"
+
+class Game {
+    Coordinates mapSize;
 
 public:
-	virtual ~Game() = default;
-
-	virtual create_map(Coordinates size) = 0;
+    void create_map(Coordinates size);
+    const Coordinates& get_mapSize() const;
+    Coordinates get_playerPos() const;
 };

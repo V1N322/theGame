@@ -1,81 +1,79 @@
 #pragma once
 
+#include "items.h"
+
+#include <list>
+#include <memory>
 
 
-class Map
-{
-	std::list<std::shared_ptr<Item>> items;
-	Actor player;
-	Coordinates mapSize = Coordinates(50, 50);
+class Map {
+    std::list<std::shared_ptr<Item>> items;
+    Actor player;
+    Coordinates mapSize = Coordinates(50, 50);
 
 public:
-	Map()
-	{
-	}
+    Map()
+    {
+    }
 
-	
-	Coordinates get_mapSize() 
-	{ 
-		return mapSize; 
-	}
 
-	Actor get_actor() 
-	{
-		return player;
-	}
+    Coordinates get_mapSize()
+    {
+        return mapSize;
+    }
 
-	std::string get_name(int numItem)
-	{
-		int num = 0;
+    Actor get_actor()
+    {
+        return player;
+    }
 
-		std::string result = "NONE";
+    std::string get_name(int numItem)
+    {
+        int num = 0;
 
-		for (const auto& item : items)
-		{
-			if (num == numItem) {
-				result = item->get_name();
-				break;
-			}
-			++num;
-		}
-		
-		return result;
-	}
+        std::string result = "NONE";
 
-	std::list<std::shared_ptr<Item>> get_items()
-	{
-		return items;
-	}
+        for (const auto& item : items) {
+            if (num == numItem) {
+                result = item->get_name();
+                break;
+            }
+            ++num;
+        }
 
-	std::list<std::shared_ptr<Item>> clear_items()
-	{
-		items.clear();
-	}
+        return result;
+    }
 
-	void deleteItem(const Coordinates& playerPos)
-	{
-		for (auto it = items.begin(); it != items.end(); ++it) {
-			if ((*it)->get_pos().x == playerPos.x && (*it)->get_pos().y == playerPos.y) {
-				items.erase(it);
-			}
-		}
-	}
+    const std::list<std::shared_ptr<Item>>& get_items()
+    {
+        return items;
+    }
 
-	char stepOnItem(Coordinates playerPos)
-	{
+    void clear_items()
+    {
+        items.clear();
+    }
 
-		for (auto it = items.begin(); it != items.end(); ++it) {
+    void deleteItem(const Coordinates& playerPos)
+    {
+        for (auto it = items.begin(); it != items.end(); ++it) {
+            if ((*it)->get_pos().x == playerPos.x && (*it)->get_pos().y == playerPos.y) {
+                items.erase(it);
+            }
+        }
+    }
 
-			if ((*it)->get_pos().x == playerPos.x && (*it)->get_pos().y == playerPos.y)
-			{
-				char symbol = (*it)->get_view();
-				deleteItem(playerPos);
-				return symbol;
-			}
-			
-		}
-		return '0';
-	}
-	
+    char stepOnItem(Coordinates playerPos)
+    {
+
+        for (auto it = items.begin(); it != items.end(); ++it) {
+
+            if ((*it)->get_pos().x == playerPos.x && (*it)->get_pos().y == playerPos.y) {
+                char symbol = (*it)->get_view();
+                deleteItem(playerPos);
+                return symbol;
+            }
+        }
+        return '0';
+    }
 };
-

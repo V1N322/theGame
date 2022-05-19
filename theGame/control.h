@@ -1,19 +1,22 @@
 #pragma once
 
-class Controller
-{
+#include "game.h"
 
-	Game game;
+class Controller {
+
+    Game game;
 
 public:
-	Controller()
-	{}
-	Controller(Game aMap)
-		:game(aMap)
-	{}
+    Controller()
+    {
+    }
 
-	virtual ~Controller() = default;
+    Controller(Game aMap)
+        : game(aMap)
+    {
+    }
 
-	virtual void start() = 0;
+    virtual ~Controller() = default;
 
+    void start();
 };

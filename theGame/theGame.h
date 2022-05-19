@@ -1,17 +1,17 @@
 #pragma once
 
-#include <iostream>
-#include <ctime>
-#include <list>
 #include "coordinates.h"
-#include "Windows.h"
-#include <ios>
-#include <random>
-#include "render.h"
-#include <time.h>
+#include <ctime>
+#include <iostream>
+#include <list>
+// #include "Windows.h"
 #include "Map.h"
-#include <memory>
-#include "items.h"
-#include "inventory.h"
 #include "control.h"
 #include "game.h"
+#include "inventory.h"
+#include "items.h"
+#include "render.h"
+#include <ios>
+#include <memory>
+#include <random>
+#include <time.h>
